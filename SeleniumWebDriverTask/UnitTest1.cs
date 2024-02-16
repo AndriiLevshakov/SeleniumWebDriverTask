@@ -1,23 +1,57 @@
+using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
-
 
 namespace SeleniumWebDriverTask
 {    
     public class Tests
     {
-        IWebDriver driver;
-        string baseUrl = "https://www.epam.com/";
+        private IWebDriver driver;
+        private WebDriverWait wait; 
+        
+        readonly string baseUrl = "https://www.epam.com/";
+
+        private readonly By acceptButtonLocator = By.Id("onetrust-accept-btn-handler");
+
+        private readonly By careersLink = By.XPath("//span[@class='top-navigation__item-text']/a[contains(@href, 'careers')]");
+
+        private readonly By keywordsField = By.XPath("//input[@placeholder='Keyword']");
+
+        private readonly By allLocationSelector = By.XPath("//li[contains(@id, 'all_locations')]");
+
+        private readonly By remoteOption = By.XPath("//label[contains(text(), 'Remote')]");
+
+        private readonly By findButtonForTest1 = By.XPath("//button[@type='submit']");
+
+        private readonly By sortingLabelDate = By.XPath("//label[contains(text(), 'Date')]");
+
+        private readonly By latestResult = By.XPath("//div[@class='search-result__item-name-section']//a[contains(@class, 'search-result')]");
+
+        private readonly By magnifierIcon = By.XPath("//span[contains(@class, 'search-icon')]");
+
+        private readonly By locationField = By.XPath("//span[@class='select2-selection__arrow']");
+
+        private readonly By searchInput = By.XPath("//input[@type='search']");
+
+        private readonly By findButtonForGlobalSearch = By.XPath("//span[contains(text(), 'Find')]");
+
+        private readonly By searchResult = By.XPath("//section[contains(@data-config-path, 'content-container')]");
+
 
         [SetUp]
         public void Setup()
         {
             ChromeOptions options = new ChromeOptions();
+
             options.AddArguments("--start-maximized");
+
             driver = new ChromeDriver(options);
+
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
         }
 
         [TearDown]
@@ -30,35 +64,29 @@ namespace SeleniumWebDriverTask
         public void Test1(string programmingLanguage, string location)
         {
             driver.Navigate().GoToUrl(baseUrl);
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
 
-            IWebElement acceptButton = wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("onetrust-accept-btn-handler")));
-            acceptButton.Click();
+            wait.Until(ExpectedConditions.ElementToBeClickable(acceptButtonLocator)).Click();
 
-            IWebElement careersLink = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@class=\"top-navigation__item-text\"]/a[contains(@href, 'careers')]")));
-            careersLink.Click();
+            wait.Until(ExpectedConditions.ElementToBeClickable(careersLink)).Click();
 
-            IWebElement keywordsField = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//input[@placeholder=\"Keyword\"]")));
-            keywordsField.SendKeys(programmingLanguage);
+            wait.Until(ExpectedConditions.ElementToBeClickable(keywordsField)).SendKeys(programmingLanguage);
 
+            driver.FindElement(locationField).Click();
 
-            IWebElement locationField = driver.FindElement(By.XPath("//span[@class=\"select2-selection__arrow\"]"));
-            locationField.Click();
+            wait.Until(ExpectedConditions.ElementToBeClickable(allLocationSelector)).Click();
 
-            IWebElement allLocationSelector = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//li[contains(@id, 'all_locations')]")));
-            allLocationSelector.Click();
+            driver.FindElement(remoteOption).Click();
 
-            IWebElement remoteOption = driver.FindElement(By.XPath("//label[contains(text(), 'Remote')]"));
-            remoteOption.Click();
+            driver.FindElement(findButtonForTest1).Click();
 
-            IWebElement findButton = driver.FindElement(By.XPath("//button[@type=\"submit\"]"));
-            findButton.Click();
+            wait.Until(ExpectedConditions.ElementToBeClickable(sortingLabelDate)).Click();
 
-            IWebElement sortingLabelDate = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//label[contains(text(), 'Date')]")));
-            sortingLabelDate.Click();
+            var elements = driver.FindElements(latestResult);
 
-            IWebElement latestResult = driver.FindElement(By.XPath("//ul[@class=\"search-result__list\"]/li/div[3]/div/div/div[2]/a"));
-            latestResult.Click();
+            if (elements.Any())
+            {
+                elements.First().Click();
+            }
 
             wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
 
@@ -73,19 +101,17 @@ namespace SeleniumWebDriverTask
         public void Task2_GlobalSearch(string searchKeyword)
         {
             driver.Navigate().GoToUrl(baseUrl);
-            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
 
-            IWebElement magnifierIcon = wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[contains(@class, 'search-icon')]")));
-            magnifierIcon.Click();
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
 
-            IWebElement searchInput = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//input[@type=\"search\"]")));
-            searchInput.SendKeys(searchKeyword);
+            wait.Until(ExpectedConditions.ElementToBeClickable(magnifierIcon)).Click();
 
-            IWebElement findButton = driver.FindElement(By.XPath("//span[contains(text(), 'Find')]"));
-            findButton.Click();
+            wait.Until(ExpectedConditions.ElementToBeClickable(searchInput)).SendKeys(searchKeyword);
 
-            // Validate using LINQ
-            var searchResults = wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(By.XPath("//section[contains(@data-config-path, 'content-container')]")));
+            driver.FindElement(findButtonForGlobalSearch).Click();
+          
+            var searchResults = wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(searchResult));
+
             Assert.That(searchResults.All(result => result.Text.ToLower().Contains(searchKeyword.ToLower())));
         }
     }
