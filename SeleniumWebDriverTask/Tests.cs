@@ -16,31 +16,18 @@ namespace SeleniumWebDriverTask
         readonly string baseUrl = "https://www.epam.com/";
 
         private readonly By acceptButtonLocator = By.Id("onetrust-accept-btn-handler");
-
         private readonly By careersLink = By.XPath("//span[@class='top-navigation__item-text']/a[contains(@href, 'careers')]");
-
         private readonly By keywordsField = By.XPath("//input[@placeholder='Keyword']");
-
         private readonly By allLocationSelector = By.XPath("//li[contains(@id, 'all_locations')]");
-
         private readonly By remoteOption = By.XPath("//label[contains(text(), 'Remote')]");
-
         private readonly By findButtonForTest1 = By.XPath("//button[@type='submit']");
-
         private readonly By sortingLabelDate = By.XPath("//label[contains(text(), 'Date')]");
-
         private readonly By latestResult = By.XPath("//div[@class='search-result__item-name-section']//a[contains(@class, 'search-result')]");
-
         private readonly By magnifierIcon = By.XPath("//span[contains(@class, 'search-icon')]");
-
         private readonly By locationField = By.XPath("//span[@class='select2-selection__arrow']");
-
         private readonly By searchInput = By.XPath("//input[@type='search']");
-
         private readonly By findButtonForGlobalSearch = By.XPath("//span[contains(text(), 'Find')]");
-
         private readonly By searchResult = By.XPath("//section[contains(@data-config-path, 'content-container')]");
-
 
         [SetUp]
         public void Setup()
