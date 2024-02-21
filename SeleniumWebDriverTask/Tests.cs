@@ -11,34 +11,19 @@ namespace SeleniumWebDriverTask
     public class Tests
     {
         private IWebDriver driver;
-        private WebDriverWait wait; 
         
-        readonly string baseUrl = "https://www.epam.com/";
-
-        private readonly By acceptButtonLocator = By.Id("onetrust-accept-btn-handler");
-        private readonly By careersLink = By.XPath("//span[@class='top-navigation__item-text']/a[contains(@href, 'careers')]");
-        private readonly By keywordsField = By.XPath("//input[@placeholder='Keyword']");
-        private readonly By allLocationSelector = By.XPath("//li[contains(@id, 'all_locations')]");
-        private readonly By remoteOption = By.XPath("//label[contains(text(), 'Remote')]");
-        private readonly By findButtonForTest1 = By.XPath("//button[@type='submit']");
-        private readonly By sortingLabelDate = By.XPath("//label[contains(text(), 'Date')]");
-        private readonly By latestResult = By.XPath("//div[@class='search-result__item-name-section']//a[contains(@class, 'search-result')]");
-        private readonly By magnifierIcon = By.XPath("//span[contains(@class, 'search-icon')]");
-        private readonly By locationField = By.XPath("//span[@class='select2-selection__arrow']");
-        private readonly By searchInput = By.XPath("//input[@type='search']");
-        private readonly By findButtonForGlobalSearch = By.XPath("//span[contains(text(), 'Find')]");
-        private readonly By searchResult = By.XPath("//section[contains(@data-config-path, 'content-container')]");
-
         [SetUp]
         public void Setup()
         {
-            ChromeOptions options = new ChromeOptions();
+            string userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string downloadPath = Path.Combine(userPath, "Downloads");
+
+            var options = new ChromeOptions();
 
             options.AddArguments("--start-maximized");
+            options.AddUserProfilePreference("download.default_directory", downloadPath);
 
             driver = new ChromeDriver(options);
-
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
         }
 
         [TearDown]
@@ -48,58 +33,82 @@ namespace SeleniumWebDriverTask
         }
 
         [TestCase("C#", "All Locations")]
-        public void Test1(string programmingLanguage, string location)
+        public void Test1_Careers(string programmingLanguage, string location)
         {
-            driver.Navigate().GoToUrl(baseUrl);
+            var homePage = new HomePage(driver);
 
-            wait.Until(ExpectedConditions.ElementToBeClickable(acceptButtonLocator)).Click();
+            var careersPage = new CareersPage(driver);
 
-            wait.Until(ExpectedConditions.ElementToBeClickable(careersLink)).Click();
+            homePage.ClickAcceptButton();
 
-            wait.Until(ExpectedConditions.ElementToBeClickable(keywordsField)).SendKeys(programmingLanguage);
+            homePage.ClickCareersLink();
 
-            driver.FindElement(locationField).Click();
+            careersPage.EnterKeywords(programmingLanguage);
 
-            wait.Until(ExpectedConditions.ElementToBeClickable(allLocationSelector)).Click();
+            careersPage.OpenLocationDropDownMenu();
 
-            driver.FindElement(remoteOption).Click();
+            careersPage.SelectAllLocations();
 
-            driver.FindElement(findButtonForTest1).Click();
+            careersPage.SelectRemoteOption();
 
-            wait.Until(ExpectedConditions.ElementToBeClickable(sortingLabelDate)).Click();
+            careersPage.ClickFindButton();
 
-            var elements = driver.FindElements(latestResult);
+            careersPage.ClickSortingLabelByDate();
 
-            if (elements.Any())
-            {
-                elements.First().Click();
-            }
+            careersPage.GetLatestResul();
 
-            wait.Until(driver => ((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState").Equals("complete"));
-
-            bool isLanguagePresent = driver.PageSource.Contains(programmingLanguage);
-
-            Assert.That(isLanguagePresent, $"Programming language '{programmingLanguage}' not found on the page");
+            Assert.That(careersPage.ConfirmThatProgrammingLanguageIsPresentOnThePage(programmingLanguage),
+                $"Programming language '{programmingLanguage}' not found on the page");
         }
 
         [TestCase("BLOCKCHAIN")]
         [TestCase("Cloud")]
         [TestCase("Automation")]
-        public void Task2_GlobalSearch(string searchKeyword)
+        public void Test2_GlobalSearch(string searchKeyword)
         {
-            driver.Navigate().GoToUrl(baseUrl);
+            var homePage = new HomePage(driver);
 
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            homePage.ClickMagnifierIcon();
 
-            wait.Until(ExpectedConditions.ElementToBeClickable(magnifierIcon)).Click();
+            homePage.SendSearchInputToGlobalSearch(searchKeyword);
 
-            wait.Until(ExpectedConditions.ElementToBeClickable(searchInput)).SendKeys(searchKeyword);
-
-            driver.FindElement(findButtonForGlobalSearch).Click();
+            homePage.ClickFindButtonForGlobalSearch();
           
-            var searchResults = wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(searchResult));
+            Assert.That(homePage.ConfirmPresenceOfSearchKeywordsOnThePage(searchKeyword));
+        }
 
-            Assert.That(searchResults.All(result => result.Text.ToLower().Contains(searchKeyword.ToLower())));
+        [Test]
+        public void Test3_ValidateFileDownload()
+        {
+            var homePage = new HomePage(driver);            
+
+            var aboutPage = new AboutPage(driver);
+
+            homePage.ClickAcceptButton();
+
+            homePage.ClickAboutLink();
+
+            aboutPage.ClickDownloadButton();
+
+            Assert.That(aboutPage.CheckIfDownloaded("EPAM_Corporate_Overview_Q4_EOY.pdf"));
+        }
+
+        [Test]
+        public void Test4_ValidateArticleTitleInCarousel()
+        {
+            var homePage = new HomePage(driver);            
+
+            var insightsPage = new InsightsPage(driver);
+
+            homePage.ClickAcceptButton();
+
+            homePage.ClickInsightsLink();
+
+            insightsPage.SwipeCarouselTwice();
+
+            insightsPage.ClickReadMoreButton();
+
+            Assert.That(insightsPage.CheckIfArticleTextContainsActiveSliderText());
         }
     }
 }
