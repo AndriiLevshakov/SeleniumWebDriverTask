@@ -15,10 +15,10 @@ namespace SeleniumWebDriverTask
         private readonly IWebDriver driver;
         private readonly WebDriverWait wait;
         
-        private readonly By buttonToSwipeCarousel = By.XPath("//button[@class='slider__left-arrow slider-navigation-arrow']");
-        private readonly By activeSlideText = By.XPath("//div[@class='owl-item active']//span[@class='museo-sans-light']");
-        private readonly By activeSlideReadMoreButton = By.XPath("//div[@class='owl-item active']//a[@tabindex='0']");
-        private readonly By articleText = By.XPath("//span[@class='font-size-80-33']/span[@class='museo-sans-light']");
+        private readonly By _buttonToSwipeCarousel = By.XPath("//button[@class='slider__left-arrow slider-navigation-arrow']");
+        private readonly By _activeSlideText = By.XPath("//div[@class='owl-item active']//span[@class='museo-sans-light']");
+        private readonly By _activeSlideReadMoreButton = By.XPath("//div[@class='owl-item active']//a[@tabindex='0']");
+        private readonly By _articleText = By.XPath("//span[@class='font-size-80-33']/span[@class='museo-sans-light']");
 
         private string carouselArticleTitle;
         private string articleHeader;
@@ -31,25 +31,25 @@ namespace SeleniumWebDriverTask
         }
 
         public void SwipeCarouselTwice()
-        { 
+        {
             for (int i = 0; i < 4; i++)
             {
-                wait.Until(ExpectedConditions.ElementToBeClickable(buttonToSwipeCarousel)).Click();
+                wait.Until(ExpectedConditions.ElementToBeClickable(_buttonToSwipeCarousel)).Click();
             }
 
             Thread.Sleep(2000);
 
-            carouselArticleTitle = driver.FindElement(activeSlideText).Text;            
+            carouselArticleTitle = driver.FindElement(_activeSlideText).Text;            
         }
 
         public void ClickReadMoreButton()
         {
-            driver.FindElement(activeSlideReadMoreButton).Click();            
+            driver.FindElement(_activeSlideReadMoreButton).Click();            
         }
 
         public bool CheckIfArticleTextContainsActiveSliderText()
         {
-            articleHeader = wait.Until(ExpectedConditions.ElementIsVisible(articleText)).Text;
+            articleHeader = wait.Until(ExpectedConditions.ElementIsVisible(_articleText)).Text;
 
             if (articleHeader.Contains(carouselArticleTitle))
             {

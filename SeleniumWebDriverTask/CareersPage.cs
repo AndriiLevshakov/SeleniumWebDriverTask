@@ -14,13 +14,13 @@ namespace SeleniumWebDriverTask
         private readonly IWebDriver driver;
         private readonly WebDriverWait wait;
 
-        private readonly By keywordsField = By.XPath("//input[@placeholder='Keyword']");
-        private readonly By allLocationSelector = By.XPath("//li[contains(@id, 'all_locations')]");
-        private readonly By remoteOption = By.XPath("//label[contains(text(), 'Remote')]");
-        private readonly By findButtonForTest1 = By.XPath("//button[@type='submit']");
-        private readonly By sortingLabelDate = By.XPath("//label[contains(text(), 'Date')]");
-        private readonly By latestResult = By.XPath("//div[@class='search-result__item-name-section']//a[contains(@class, 'search-result')]");
-        private readonly By locationField = By.XPath("//span[@class='select2-selection__arrow']");
+        private readonly By _keywordsField = By.XPath("//input[@placeholder='Keyword']");
+        private readonly By _allLocationSelector = By.XPath("//li[contains(@id, 'all_locations')]");
+        private readonly By _remoteOption = By.XPath("//label[contains(text(), 'Remote')]");
+        private readonly By _findButtonForTest1 = By.XPath("//button[@type='submit']");
+        private readonly By _sortingLabelDate = By.XPath("//label[contains(text(), 'Date')]");
+        private readonly By _latestResult = By.XPath("//div[@class='search-result__item-name-section']//a[contains(@class, 'search-result')]");
+        private readonly By _locationField = By.XPath("//span[@class='select2-selection__arrow']");
 
         public CareersPage(IWebDriver driver)
         {
@@ -31,37 +31,37 @@ namespace SeleniumWebDriverTask
 
         public void EnterKeywords(string keywords)
         {
-            wait.Until(ExpectedConditions.ElementToBeClickable(keywordsField)).SendKeys(keywords);
+            wait.Until(ExpectedConditions.ElementToBeClickable(_keywordsField)).SendKeys(keywords);
         }
 
         public void OpenLocationDropDownMenu()
         {
-            driver.FindElement(locationField).Click();
+            driver.FindElement(_locationField).Click();
         }
 
         public void SelectAllLocations()
         {
-            driver.FindElement(allLocationSelector).Click();
+            driver.FindElement(_allLocationSelector).Click();
         }
 
         public void SelectRemoteOption()
         {
-            driver.FindElement(remoteOption).Click();
+            driver.FindElement(_remoteOption).Click();
         }
 
         public void ClickFindButton()
         {
-            driver.FindElement(findButtonForTest1).Click();
+            driver.FindElement(_findButtonForTest1).Click();
         }
 
         public void ClickSortingLabelByDate()
         {
-            wait.Until(ExpectedConditions.ElementToBeClickable(sortingLabelDate)).Click();
+            wait.Until(ExpectedConditions.ElementToBeClickable(_sortingLabelDate)).Click();
         }
 
         public void GetLatestResul()
         {
-            var elements = driver.FindElements(latestResult);
+            var elements = driver.FindElements(_latestResult);
 
             if(elements.Any())
             {

@@ -14,26 +14,26 @@ namespace SeleniumWebDriverTask
 {
     public class AboutPage
     {
-        private readonly IWebDriver driver;
-        private readonly WebDriverWait wait;
+        private readonly IWebDriver _driver;
+        private readonly WebDriverWait _wait;
 
-        private readonly By downloadButton = By.XPath("//a[contains(@href, 'EPAM_Corporate_Overview')]");        
-        private readonly By SectionWhichHelpToSeeDownloadButton = By.XPath("//span[contains(text(), 'MEET')]");
+        private readonly By _downloadButton = By.XPath("//a[contains(@href, 'EPAM_Corporate_Overview')]");        
+        private readonly By _sectionWhichHelpToSeeDownloadButton = By.XPath("//span[contains(text(), 'MEET')]");
 
         public AboutPage(IWebDriver driver)
-        { 
-            this.driver = driver;
+        {
+            _driver = driver;
 
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            _wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
 
         public void ClickDownloadButton()
         {
-            var actions = new Actions(driver);
+            var actions = new Actions(_driver);
 
-            actions.MoveToElement(driver.FindElement(SectionWhichHelpToSeeDownloadButton)).Perform();
-            
-            wait.Until(ExpectedConditions.ElementToBeClickable(downloadButton)).Click();
+            actions.MoveToElement(_driver.FindElement(_sectionWhichHelpToSeeDownloadButton)).Perform();
+
+            _wait.Until(ExpectedConditions.ElementToBeClickable(_downloadButton)).Click();
         }
         
         public bool CheckIfDownloaded(string fileName)
