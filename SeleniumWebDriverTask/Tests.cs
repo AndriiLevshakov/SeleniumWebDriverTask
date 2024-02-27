@@ -20,8 +20,10 @@ namespace SeleniumWebDriverTask
 
             var options = new ChromeOptions();
 
-            options.AddArguments("--start-maximized");
+            options.AddArguments("--headless");            
+            options.AddArguments("--window-size=1920,1080");
             options.AddUserProfilePreference("download.default_directory", downloadPath);
+            
 
             driver = new ChromeDriver(options);
         }
@@ -37,11 +39,13 @@ namespace SeleniumWebDriverTask
         {
             var homePage = new HomePage(driver);
 
-            var careersPage = new CareersPage(driver);
+            
 
             homePage.ClickAcceptButton();
 
             homePage.ClickCareersLink();
+
+            var careersPage = new CareersPage(driver);
 
             careersPage.EnterKeywords(programmingLanguage);
 
