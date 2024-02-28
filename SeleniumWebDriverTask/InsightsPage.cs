@@ -50,13 +50,8 @@ namespace SeleniumWebDriverTask
         public bool CheckIfArticleTextContainsActiveSliderText()
         {
             articleHeader = wait.Until(ExpectedConditions.ElementIsVisible(_articleText)).Text;
-
-            if (articleHeader.Contains(carouselArticleTitle))
-            {
-                return true;
-            }
-
-            return false;
+            
+            return articleHeader.Contains(carouselArticleTitle);
         }
     }
 }
